@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Analysis</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif; /* Base font */
+        margin: 0;
+        padding: 0;
+        background-color: #202124; /* A dark gray */
+        font-size: 18px; /
+      }
+
+      .form-container {
+        display: flex; /* Arrange elements horizontally */
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center; /* Center elements horizontally */
+        margin: 20px auto; /* Add margin and center horizontally */
+        max-width: 700px; /* Limit container width */
+        border: 2px solid #ffcc00; /* Google yellow border */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        padding: 20px;
+        background-size: cover; /* Stretch image to fill container */
+        background-repeat: no-repeat; /* Prevent image repetition */
+        background-position: center; /* Center image */
+        font-size: 18px; /
+      }
+
+      .form-container h3 {
+        margin-bottom: 10px;
+        color: #4285f4; /* Google blue text */
+        text-align: center;
+        font-size: 24px;
+      }
+
+      input[type="text"], button {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        width: 100%; /* Make inputs full width */
+        font-size: 1.2em;  /
+      }
+
+      button {
+        background-color: #4caf50; /* Google green */
+        color: white;
+        cursor: pointer;
+        font-size: 18px; /
+      }
+
+      #results-container {
+        margin: 20px auto;
+        max-width: 500px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: 'Permanent Marker', cursive; /* Anime-inspired font */
+        font-size: 1rem;
+      }
+
+      .keyword-card {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #f0f0f0;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+      }
+
+      .keyword-card h3 {
+        color: #333; /* Dark text for keywords */
+      }
+
+      .keyword-card ul {
+        list-style: none; /* Remove default bullet points */
+        padding: 0;
+        margin: 0;
+      }
+
+      .text-display-box {
+          border: 1px solid #f0f0f0;  /* Changed for visual consistency */
+          padding: 15px;
+          margin-bottom: 10px;
+          max-width: 500px; /* Keep your existing max-width */
+          border-radius: 5px;  /* Rounded corners */
+          background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+          font-family: 'Permanent Marker', cursive; /* Anime-inspired font */
+      }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <input type="text" id="bookTitle" placeholder="Book Title">
+        <input type="text" id="bookAuthor" placeholder="Author">
+        <input type="text" id="keywords" placeholder="Keywords (comma-separated)">
+        <button id="analyzeBtn">Analyze</button>
+    </div>
+
+    <div id="results-container"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      $('#analyzeBtn').click(function() {
+        const bookTitle = $('#bookTitle').val();
+        const bookAuthor = $('#bookAuthor').val();
+        const keywords = $('#keywords').val().split(',');
+
+        const bookData = {
+            book: bookTitle,
+            author: bookAuthor,
+            keyWords: keywords
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: 'https://books-genai-jit-njptbyurhq-uc.a.run.app/analysis',
+            data: JSON.stringify(bookData),
+            contentType: 'application/json',
+            success: function(response) {
+                displayTextResult(response);
+            },
+            error: function() {
+                alert('An error occurred during the analysis');
+            }
+        });
+      });
+
+      function displayTextResult(text) {
+        const resultsContainer = $('#results-container');
+        resultsContainer.empty(); // Clear previous results
+        resultsContainer.append(`<div class="text-display-box">${text}</div>`);
+      }
+    });
+    </script>
+</body>
+</html>
+

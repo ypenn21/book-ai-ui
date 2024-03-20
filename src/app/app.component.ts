@@ -1,13 +1,31 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { AnalysisService } from './analysis.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
+  selector: 'app-analysis',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true
 })
-export class AppComponent {
-  title = 'book-analysis-ui';
+export class AppComponent implements OnInit {
+  bookTitle = '';
+  bookAuthor = '';
+  keywords = '';
+  analysisResults: any = null;
+
+  constructor(private analysisService: AnalysisService) {}
+
+  ngOnInit() {}
+
+  submitAnalysis() {
+    const bookData = {
+      book: this.bookTitle,
+      author: this.bookAuthor,
+      keyWords: this.keywords.split(',')
+    };
+
+    this.analysisService.analyzeBook(bookData)
+      .subscribe(results => {
+        this.analysisResults = results;
+      });
+  }
 }
