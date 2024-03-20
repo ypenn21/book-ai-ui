@@ -129,27 +129,37 @@
             author: bookAuthor,
             keyWords: keywords
         };
+        function makeAjaxCall() {
+            $.ajax({
+                type: 'POST',
+                url: 'https://books-genai-jit-njptbyurhq-uc.a.run.app/analysis?contentCharactersLimit=4000',
+                data: JSON.stringify(bookData),
+                contentType: 'application/json',
+                success: function(response) {
+                    $('#loading-indicator').hide(); // Hide the loading indicator
 
-        $.ajax({
-            type: 'POST',
-            url: 'https://books-genai-jit-njptbyurhq-uc.a.run.app/analysis',
-            data: JSON.stringify(bookData),
-            contentType: 'application/json',
-            success: function(response) {
-                $('#loading-indicator').hide(); // Hide the loading indicator
-
-                // Check if the response is a string
-                if (typeof response === 'string') {
-                  displayTextResult(response);
-                } else {
-                  displayResults(response);
+                    // Check if the response is a string
+                    if (typeof response === 'string') {
+                      displayTextResult(response);
+                    } else {
+                      displayResults(response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    if (retries > 0) {
+                        retries--;
+                        console.log('Retrying...');
+                        setTimeout(makeAjaxCall, retryDelay);
+                    } else {
+                        $('#loading-indicator').hide();
+                        alert('An error occurred during the analysis');
+                    }
                 }
-            },
-            error: function() {
-                $('#loading-indicator').hide();
-                alert('An error occurred during the analysis');
-            }
-        });
+            });
+        }
+        var retries = 1;  // Number of retries. retry number set here +1 is the number of times it will retry.
+        var retryDelay = 1000; // Delay between retries in milliseconds
+        makeAjaxCall();
       });
 
       function displayTextResult(text) {
