@@ -88,6 +88,11 @@
           background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
           font-family: 'Permanent Marker', cursive; /* Anime-inspired font */
       }
+      #loading-indicator {
+          display: none; /* Initially hidden */
+          text-align: center;
+          background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+      }
     </style>
 </head>
 <body>
@@ -98,7 +103,11 @@
         <button id="analyzeBtn">Analyze</button>
     </div>
 
-    <div id="results-container"></div>
+    <div id="results-container">
+
+      <div id="loading-indicator">Loading...</div>
+
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
@@ -107,6 +116,13 @@
         const bookTitle = $('#bookTitle').val();
         const bookAuthor = $('#bookAuthor').val();
         const keywords = $('#keywords').val().split(',');
+
+        $('#results-container').empty(); // Clear the previous results
+        if ($('#loading-indicator').length === 0) {
+            $('<div id="loading-indicator">Loading...</div>').appendTo('#results-container');
+        }
+        $('#loading-indicator').show();
+
 
         const bookData = {
             book: bookTitle,
@@ -120,9 +136,17 @@
             data: JSON.stringify(bookData),
             contentType: 'application/json',
             success: function(response) {
-                displayTextResult(response);
+                $('#loading-indicator').hide(); // Hide the loading indicator
+
+                // Check if the response is a string
+                if (typeof response === 'string') {
+                  displayTextResult(response);
+                } else {
+                  displayResults(response);
+                }
             },
             error: function() {
+                $('#loading-indicator').hide();
                 alert('An error occurred during the analysis');
             }
         });
