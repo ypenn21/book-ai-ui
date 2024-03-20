@@ -93,6 +93,19 @@
           text-align: center;
           background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
       }
+
+      /* Animation Keyframes */
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(5px); } /* Adjust for the desired shake distance */
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+      }
+
+      /* Apply Animation */
+      #loading-indicator.shaking {
+        animation: shake 1s infinite alternate; /* Adjust time and other properties */
+      }
     </style>
 </head>
 <body>
@@ -121,7 +134,7 @@
         if ($('#loading-indicator').length === 0) {
             $('<div id="loading-indicator">Loading...</div>').appendTo('#results-container');
         }
-        $('#loading-indicator').show();
+        $('#loading-indicator').show().addClass('shaking'); ;
 
 
         const bookData = {
@@ -136,7 +149,7 @@
                 data: JSON.stringify(bookData),
                 contentType: 'application/json',
                 success: function(response) {
-                    $('#loading-indicator').hide(); // Hide the loading indicator
+                    $('#loading-indicator').hide().removeClass('shaking'); // Hide the loading indicator
 
                     // Check if the response is a string
                     if (typeof response === 'string') {
@@ -151,7 +164,7 @@
                         console.log('Retrying...');
                         setTimeout(makeAjaxCall, retryDelay);
                     } else {
-                        $('#loading-indicator').hide();
+                        $('#loading-indicator').hide().removeClass('shaking');
                         alert('An error occurred during the analysis');
                     }
                 }
