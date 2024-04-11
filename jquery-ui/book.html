@@ -114,6 +114,7 @@
         <input type="text" id="bookAuthor" placeholder="Author">
         <input type="text" id="keywords" placeholder="Keywords (comma-separated)">
         <button id="analyzeBtn">Analyze</button>
+        <button id="clearBtn">Clear</button>
     </div>
 
     <div id="results-container">
@@ -125,6 +126,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
     $(document).ready(function() {
+      $('#clearBtn').click(function() {
+        const resultsContainer = $('#results-container');
+        resultsContainer.empty(); 
+      });
       $('#analyzeBtn').click(function() {
         const bookTitle = $('#bookTitle').val();
         const bookAuthor = $('#bookAuthor').val();
