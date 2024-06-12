@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shell Script to Terraform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material-darker.min.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: whitesmoke;
+        font-size: 18px;
+      }
+
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px auto;
+        max-width: 700px;
+        border: 2px solid #141000;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(120, 120, 120);
+        padding: 20px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        font-size: 18px;
+        width: 90%; /* Make the container responsive */
+      }
+
+      .form-container h3 {
+        margin-bottom: 10px;
+        color: #4285f4;
+        text-align: center;
+        font-size: 24px;
+      }
+
+      .reviewForm {
+        width: 90%;
+        color: white;
+      }
+
+      form {
+        width: 100%;
+      }
+
+      textarea, button {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+        font-size: 1.2em;
+      }
+
+      textarea {
+        background-color: white; /* Set the background color to white */
+      }
+
+      button {
+        background-color: #4285f4;
+        max-width: 300px;
+        color: white;
+        cursor: pointer;
+        font-size: 18px;
+        scroll-padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      #results-container {
+        margin: 20px auto;
+        max-width: 700px;
+        box-shadow: 0 2px 5px rgba(120, 120, 120);
+        padding: 15px;
+        border: 2px solid #141000;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      .keyword-card {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #f0f0f0;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .keyword-card h3 {
+        color: #333;
+      }
+
+      .keyword-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .text-display-box {
+        border: 1px solid #f0f0f0;
+        padding: 15px;
+        margin-bottom: 10px;
+        max-width: 700px;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.8);
+        height: 300px; /* Set a fixed height */
+      }
+
+      #loading-indicator {
+        display: none;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+      }
+
+      #loading-indicator.shaking {
+        animation: shake 1s infinite alternate;
+      }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h3>Shell Script to Terraform</h3>
+        <form id="reviewForm">
+            <label for="terraform">Shell Script</label>
+            <textarea id="terraform" placeholder="Enter your Bash script here..."></textarea>
+            <button type="button" id="analyzeBtn" aria-label="Analyze">To-Terraform</button>
+            <button type="button" id="clearBtn" aria-label="Clear">Clear</button>
+        </form>
+    </div>
+
+    <div id="results-container">
+      <div id="loading-indicator">Loading...</div>
+      <textarea id="outputBox" class="text-display-box"></textarea>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/shell/shell.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/hcl/hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      var editor = CodeMirror.fromTextArea(document.getElementById('terraform'), {
+        mode: 'shell',
+        theme: 'material-darker',
+        lineNumbers: true,
+        matchBrackets: true,
+        autoCloseTags: true
+      });
+
+      var outputEditor = CodeMirror.fromTextArea(document.getElementById('outputBox'), {
+        mode: 'hcl',
+        theme: 'material-darker',
+        lineNumbers: true,
+        readOnly: true
+      });
+
+      $('#clearBtn').click(function() {
+        // const resultsContainer = $('#results-container');
+        // resultsContainer.empty();
+        // editor.setValue('');
+        outputEditor.setValue('');
+      });
+
+      $('#analyzeBtn').click(function() {
+        const tf_script = editor.getValue();
+
+        if (!tf_script) {
+          alert('Please enter a Bash script.');
+          return;
+        }
+
+        outputEditor.setValue(''); // Clear the previous results
+        // if ($('#loading-indicator').length === 0) {
+        //     $('<div id="loading-indicator">Loading...</div>').appendTo('#results-container');
+        // }
+        // $('#loading-indicator').show().addClass('shaking');
+
+        const terraform = {
+            script: tf_script
+        };
+        function makeAjaxCall() {
+            $.ajax({
+                type: 'POST',
+                url: 'https://books-genai-jit-njptbyurhq-uc.a.run.app/document/bash/to-terraform',
+                data: JSON.stringify(terraform),
+                contentType: 'application/json',
+                success: function(response) {
+                    // $('#loading-indicator').hide().removeClass('shaking'); // Hide the loading indicator
+
+                    if (typeof response === 'string') {
+                      displayTextResult(response);
+                    } else {
+                      displayTextResult(response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    if (retries > 0) {
+                        retries--;
+                        console.log('Retrying...');
+                        setTimeout(makeAjaxCall, retryDelay);
+                    } else {
+                        // $('#loading-indicator').hide().removeClass('shaking');
+                        displayTextResult('An error occurred during the analysis.');
+                    }
+                }
+            });
+        }
+        var retries = 1;  // Number of retries. retry number set here +1 is the number of times it will retry.
+        var retryDelay = 1000; // Delay between retries in milliseconds
+        makeAjaxCall();
+      });
+
+      function displayTextResult(text) {
+        outputEditor.setValue(text);
+      }
+    });
+    </script>
+</body>
+</html>
