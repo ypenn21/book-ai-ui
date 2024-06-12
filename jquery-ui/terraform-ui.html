@@ -174,7 +174,8 @@
         readOnly: true
       });
 
-      const exampleScript = `PROJECT_ID="my-gcp-project"
+      const exampleScript = `
+      PROJECT_ID="my-gcp-project"
       ZONE="us-central1-a"
       INSTANCE_NAME="web-server-01"
       MACHINE_TYPE="e2-medium"
@@ -197,6 +198,7 @@
     $('#toggleExampleBtn').click(function() {
       if (editor.getValue().trim() === exampleScript) {
         editor.setValue(''); // Clear if the example is showing
+        outputEditor.setValue('');
       } else {
         editor.setValue(exampleScript); // Insert the example
       }
