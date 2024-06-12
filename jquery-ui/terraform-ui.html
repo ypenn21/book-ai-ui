@@ -110,8 +110,14 @@
 
       #loading-indicator {
         display: none;
+        font-size: 2em;
+        font-weight: bold;
+        color: #4285f4;
         text-align: center;
-        background-color: rgba(255, 255, 255, 0.8);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
       @keyframes shake {
@@ -119,10 +125,6 @@
         25% { transform: translateX(5px); }
         75% { transform: translateX(-5px); }
         100% { transform: translateX(0); }
-      }
-
-      #loading-indicator.shaking {
-        animation: shake 1s infinite alternate;
       }
     </style>
 </head>
@@ -138,9 +140,9 @@
     </div>
 
     <div id="results-container">
-      <div id="loading-indicator">Loading...</div>
       <textarea id="outputBox" class="text-display-box"></textarea>
     </div>
+    <div id="loading-indicator">Loading...</div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
@@ -166,9 +168,6 @@
       });
 
       $('#clearBtn').click(function() {
-        // const resultsContainer = $('#results-container');
-        // resultsContainer.empty();
-        // editor.setValue('');
         outputEditor.setValue('');
       });
 
@@ -181,22 +180,21 @@
         }
 
         outputEditor.setValue(''); // Clear the previous results
-        // if ($('#loading-indicator').length === 0) {
-        //     $('<div id="loading-indicator">Loading...</div>').appendTo('#results-container');
-        // }
-        // $('#loading-indicator').show().addClass('shaking');
 
         const terraform = {
             script: tf_script
         };
+
         function makeAjaxCall() {
+            $('#loading-indicator').show(); // Show the loading indicator
+
             $.ajax({
                 type: 'POST',
                 url: 'https://books-genai-jit-njptbyurhq-uc.a.run.app/document/bash/to-terraform',
                 data: JSON.stringify(terraform),
                 contentType: 'application/json',
                 success: function(response) {
-                    // $('#loading-indicator').hide().removeClass('shaking'); // Hide the loading indicator
+                    $('#loading-indicator').hide(); // Hide the loading indicator
 
                     if (typeof response === 'string') {
                       displayTextResult(response);
@@ -205,17 +203,19 @@
                     }
                 },
                 error: function(xhr, status, error) {
+                    $('#loading-indicator').hide(); // Hide the loading indicator
+
                     if (retries > 0) {
                         retries--;
                         console.log('Retrying...');
                         setTimeout(makeAjaxCall, retryDelay);
                     } else {
-                        // $('#loading-indicator').hide().removeClass('shaking');
                         displayTextResult('An error occurred during the analysis.');
                     }
                 }
             });
         }
+
         var retries = 1;  // Number of retries. retry number set here +1 is the number of times it will retry.
         var retryDelay = 1000; // Delay between retries in milliseconds
         makeAjaxCall();
