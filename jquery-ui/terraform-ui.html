@@ -127,13 +127,19 @@
         75% { transform: translateX(-5px); }
         100% { transform: translateX(0); }
       }
+
+      label[for="terraform"] {
+        cursor: pointer; /* Indicate that it's clickable */
+        color: blue;     /* Or any other color that suggests a link */
+        text-decoration: underline; /* Add an underline (optional) */
+      }
     </style>
 </head>
 <body>
     <div class="form-container">
         <h3>Shell Script to Terraform</h3>
         <form id="reviewForm">
-            <label for="terraform">Shell Script</label>
+            <label for="terraform" id="toggleExampleBtn" title="Click for example">Shell Script</label>
             <textarea id="terraform" placeholder="Enter your Bash script here..."></textarea>
             <button type="button" id="analyzeBtn" aria-label="Analyze">To-Terraform</button>
             <button type="button" id="clearBtn" aria-label="Clear">Clear</button>
@@ -167,6 +173,34 @@
         lineNumbers: true,
         readOnly: true
       });
+
+      const exampleScript = `PROJECT_ID="my-gcp-project"
+      ZONE="us-central1-a"
+      INSTANCE_NAME="web-server-01"
+      MACHINE_TYPE="e2-medium"
+      IMAGE="debian-cloud/debian-11"
+
+      gcloud services enable vision.googleapis.com
+      gcloud services enable cloudfunctions.googleapis.com
+
+      gcloud compute instances create $INSTANCE_NAME \\
+        --project $PROJECT_ID \\
+        --zone $ZONE \\
+        --machine-type $MACHINE_TYPE \\
+        --image $IMAGE \\
+        --boot-disk-size 20GB
+
+      gsutil mb -l us-central1 gs://library_next24_images
+      gsutil uniformbucketlevelaccess set on gs://library_next24_images
+      gsutil iam ch allUsers:objectViewer gs://library_next24_images`;
+
+    $('#toggleExampleBtn').click(function() {
+      if (editor.getValue().trim() === exampleScript) {
+        editor.setValue(''); // Clear if the example is showing
+      } else {
+        editor.setValue(exampleScript); // Insert the example
+      }
+    });
 
       $('#clearBtn').click(function() {
         outputEditor.setValue('');
